@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.invoicing.dao.ISaleDao">
+    <resultMap id="salelist" type="Sale">
+        <id column="saleid" property="id"/>
+        <result column="price" property="price"/>
+        <result column="quantitys" property="quantitys"/>
+        <result column="totalPrice" property="totalPrice"/>
+        <result column="saleDate" property="saleDate"/>
+        <association property="product" javaType="Product" column="productId">
+            <id column="id" property="id"/>
+            <result column="productName" property="productName"/>
+            <result column="quantity" property="quantity"/>
+        </association>
+        <association property="users" javaType="Users" column="userId">
+            <id column="id" property="id"/>
+            <result column="userName" property="userName"/>
+            <result column="password" property="password"/>
+            <result column="realName" property="realName"/>
+        </association>
+    </resultMap>
+    <insert id="insertSale">
+       INSERT INTO sale (price,quantitys,totalPrice,saleDate,userId,productId) VALUES (#{price},#{quantitys},#{totalPrice},#{saleDate},#{userId},#{productId})
+    </insert>
+    <select id="getSaleList" resultMap="salelist">
+        select product.*,users.*,sale.* from product,users,sale where sale.userId=users.id and sale.productId=product.id
+        <if test="order=='销售日期'">
+            order by sale.saleDate DESC
+        </if>
+        <if test="order== '单笔总价'">
+            ORDER BY sale.totalPrice DESC
+        </if>
+
+    </select>
+</mapper>
